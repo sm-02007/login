@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,11 +14,53 @@ namespace login
 {
     public partial class registro : Form
     {
+        private conexion dbconexion;
         public registro()
         {
             InitializeComponent();
             btn_inicio.FlatAppearance.BorderSize = 0;
             btn_inicio.Paint += Btn_inicio_Paint; // Asocia el evento Paint
+            dbconexion = new conexion();
+        }
+        private void btn_inicio_Click(object sender, EventArgs e)
+        {
+            string query = "INSERT INTO usuarios (usuario, correo, contraseña) VALUES (@usuario, @correo, @contrasena)";
+
+            // Verifica si la conexión es válida
+            if (dbconexion.GetConnection() != null)
+            {
+                try
+                {
+                    using (MySqlCommand mySqlCommand = new MySqlCommand(query, dbconexion.GetConnection()))
+                    {
+                        // Agregar valores a los parámetros
+                        mySqlCommand.Parameters.AddWithValue("@usuario", lb_usuario.Text);
+                        mySqlCommand.Parameters.AddWithValue("@correo", lb_correo.Text);
+                        mySqlCommand.Parameters.AddWithValue("@contrasena", lb_contrasena.Text);
+
+                        // Ejecutar la consulta
+                        int rowsAffected = mySqlCommand.ExecuteNonQuery();
+
+                        // Comprobar si se insertó el registro
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Usuario registrado con éxito.");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No se pudo registrar el usuario.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}");
+                }
+            }
+            else
+            {
+                MessageBox.Show("No se pudo establecer la conexión con la base de datos.");
+            }
         }
 
         private void Btn_inicio_Paint(object sender, PaintEventArgs e)
@@ -100,5 +143,7 @@ namespace login
                 lb_repeticion_contrasena.Visible = false;
             }
         }
+
+        
     }
 }

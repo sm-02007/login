@@ -96,6 +96,7 @@
             this.btn_inicio.TabIndex = 19;
             this.btn_inicio.Text = "Registrarme";
             this.btn_inicio.UseVisualStyleBackColor = false;
+            this.btn_inicio.Click += new System.EventHandler(this.btn_inicio_Click);
             // 
             // lb_contrasena
             // 
